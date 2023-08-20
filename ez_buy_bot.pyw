@@ -181,12 +181,18 @@ def start_script():
                 next_execution_time = get_next_execution_time()
                 time_to_wait = (next_execution_time - datetime.now()).total_seconds()
                 
+                # Format the next_execution_time to display only the hour and minute
+                formatted_time = next_execution_time.strftime('%H:%M')
+                
+                log_display.insert(tk.END, f"Next execution at {formatted_time}.\n")
+                
                 # Update the progress bar
                 for _ in range(int(time_to_wait)):
                     if counter == 0:  # Check if the script was stopped
                         break
                     progress_var.set((time_to_wait - _) / time_to_wait * 100)  # Update the progress value
                     time.sleep(1)
+
 
     except Exception as e:
         logging.error(f"ERROR!: {e}")  # Log the error
