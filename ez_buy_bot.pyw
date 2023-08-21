@@ -12,7 +12,7 @@ import tkinter as tk
 from tkinter import ttk, messagebox, scrolledtext
 
 
-# Version of ez_buy_bot [0.2v]
+# Version of ez_buy_bot [0.3v]
 
 
 max_executions = 288
@@ -185,6 +185,7 @@ def start_script():
                 formatted_time = next_execution_time.strftime('%H:%M')
                 
                 log_display.insert(tk.END, f"Next execution at {formatted_time}.\n")
+                log_display.see(tk.END)  # Automatically scroll to the bottom
                 
                 # Update the progress bar
                 for _ in range(int(time_to_wait)):
@@ -279,7 +280,7 @@ def on_value_scroll(event, entry):
     entry.insert(0, str(new_value))
 
 # Amount Entry
-amount_label = tk.Label(config_frame, text="Amount(only full numbers):", fg=font_color, bg=bg_color)
+amount_label = tk.Label(config_frame, text="Amount(Only full numbers):", fg=font_color, bg=bg_color)
 amount_label.grid(row=1, column=2, sticky="w")
 amount_entry = tk.Entry(config_frame, bg=bg_color, fg=font_color, insertbackground=font_color)
 amount_entry.grid(row=1, column=3, sticky="w")
@@ -287,7 +288,7 @@ amount_entry.insert(0, amount)
 amount_entry.bind("<MouseWheel>", lambda event: on_value_scroll(event, amount_entry))
 
 # Interval Entry
-interval_label = tk.Label(config_frame, text="Interval (minutes):", fg=font_color, bg=bg_color)
+interval_label = tk.Label(config_frame, text="Interval (Minutes):", fg=font_color, bg=bg_color)
 interval_label.grid(row=2, column=0, sticky="w")
 interval_entry = tk.Entry(config_frame, bg=bg_color, fg=font_color, insertbackground=font_color)
 interval_entry.grid(row=2, column=1, sticky="w")
