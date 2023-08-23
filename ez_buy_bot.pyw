@@ -77,7 +77,7 @@ def create_order():
         "strictValidate": True
     }
     
-    max_retries = 3  # You can adjust this value as needed
+    max_retries = 1000  # You can adjust this value as needed almost forever hahaha(base was 3 and program crashes before 100th attepmth)
     for attempt in range(max_retries):
         try:
             response = requests.post(url, headers=headers, json=data)
