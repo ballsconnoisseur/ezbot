@@ -6,7 +6,6 @@ import os
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 import pygame.mixer
 import logging
-import sys
 import configparser
 import tkinter as tk
 from tkinter import ttk, messagebox, scrolledtext
@@ -63,7 +62,6 @@ def play_sound_with_pygame(sound_file):
         pygame.time.Clock().tick(10)
 
 def create_order():
-    response = None
     url = 'https://xeggex.com/api/v2/createorder'
     headers = {
         'accept': 'application/json',
@@ -78,23 +76,34 @@ def create_order():
         "price": "market",
         "strictValidate": True
     }
-    try:
-        response = requests.post(url, headers=headers, json=data)
-        response.raise_for_status()  # This will raise an HTTPError if the HTTP request returned an error
-        return response.json()
     
-    except requests.RequestException as e:
-        error_message = f"API Request Error: {e}"
-        content_message = f"API Response Content: {response.content.decode('utf-8')}"
+    max_retries = 3  # You can adjust this value as needed
+    for attempt in range(max_retries):
+        try:
+            response = requests.post(url, headers=headers, json=data)
+            response.raise_for_status()  # This will raise an HTTPError if the HTTP request returned an error
+            
+            # Check for specific status codes and retry if necessary
+            if response.status_code in [501, 502, 503, 504]:
+                logging.warning(f"Encountered status code {response.status_code}. Retrying...")
+                continue
+            
+            return response.json()
         
-        # Log the messages
-        logging.error(error_message)
-        logging.error(content_message)
-        
-        # Print the messages to the console
-        print(error_message)
-        print(content_message)
-        return {}  # Return an empty dictionary to indicate an error
+        except requests.RequestException as e:
+            error_message = f"API Request Error: {e}"
+            content_message = f"API Response Content: {response.content.decode('utf-8')}" if response else "No response content"
+            
+            # Log the messages
+            logging.error(error_message)
+            logging.error(content_message)
+
+            return {}  # Return an empty dictionary to indicate an error
+
+    logging.error("Max retries reached. Request failed.")
+    return {}  # Return an empty dictionary to indicate an error after max retries
+
+
 
 def format_response(response_data):
     # List of keys to exclude
@@ -384,3 +393,5 @@ stop_button.pack(side="right", fill="both", expand=True)
 log_frame.pack(padx=10, pady=10, fill="both", expand=True)  # Now, pack the log_frame after the button_frame
 
 root.mainloop()
+
+
